@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Clinic;
 use App\Models\User;
+use App\Models\Patient;
+use App\Models\Reservation;
+
 
 class ClinicController extends Controller
 {
@@ -58,5 +61,30 @@ class ClinicController extends Controller
         return response()->json(['message' => 'No clinic associated with this doctor']);
     }
 }
+
+public function bookVisit(Request $request) 
+{
+    $patient = Patient::find($request->patient_id);
+    $reservation = Reservation::create([
+        "patient_id" => $request->patient_id,
+        "patient_name" => $patient->name,
+        "clinic_id" => $request->clinic_id,
+        "date" => $request->date,
+        "time" => $request->time,
+    ]);
+    return response()->json(['message' => 'Reservation created successfully', 'reservation' => $reservation], 201);
+
+}
+
+
+
+
+
+
+
+
+
+
+
     
 }
