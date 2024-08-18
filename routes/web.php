@@ -28,3 +28,4 @@ Route::post('/patient-signup', [Controller::class, 'patientSignup']);
 Route::post('/patient-signin', [Controller::class, 'patientSignin']);
 
 Route::post('/book-visit', [ClinicController::class, 'bookVisit']);
+Route::get('/reservations/{clinicId}', [ClinicController::class, 'getClinicReservations']);

@@ -76,6 +76,13 @@ public function bookVisit(Request $request)
 
 }
 
+public function getClinicReservations ($clinicId)
+{
+    $reservation = Reservation::where("clinic_id" , $clinicId)->get();
+    return response()->json([$reservation], 200);
+
+}
+
 
 
 
