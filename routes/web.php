@@ -29,3 +29,5 @@ Route::post('/patient-signin', [Controller::class, 'patientSignin']);
 
 Route::post('/book-visit', [ClinicController::class, 'bookVisit']);
 Route::get('/reservations/{clinicId}', [ClinicController::class, 'getClinicReservations']);
+Route::get('/patients/{clinicId}', [ClinicController::class, 'getClinicPatients']);
+Route::post('add-condition/{clinicId}', [ClinicController::class, 'addCondition']);

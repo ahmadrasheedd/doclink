@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Icon, layout } from "@chakra-ui/react";
+import { HamburgerIcon} from '@chakra-ui/icons'
 import {
   MdBarChart,
   MdPerson,
@@ -21,6 +22,7 @@ import SignInCentered from "views/auth/signIn";
 import SignUpCentered from "views/signup";
 import MyClinic from "views/admin/myClinic";
 import PatientTable from "views/admin/Patients";
+import ReservationsTable from "views/admin/reservations";
 import { FaUser } from "react-icons/fa";
 
 
@@ -89,6 +91,14 @@ const routes = [
     path: "/patients",
     icon: <Icon as={FaUser} width="20px" height="20px" color="inherit" />,
     component: PatientTable,
+
+  },
+  {
+    name: "Reservations",
+    layout: "/admin",
+    path: "/reservations",
+    icon: <Icon as={HamburgerIcon} width="20px" height="20px" color="inherit" />,
+    component: ReservationsTable,
 
   },
   {

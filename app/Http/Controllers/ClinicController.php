@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Clinic;
 use App\Models\User;
 use App\Models\Patient;
+use App\Models\Condition;
 use App\Models\Reservation;
 
 
@@ -79,9 +80,45 @@ public function bookVisit(Request $request)
 public function getClinicReservations ($clinicId)
 {
     $reservation = Reservation::where("clinic_id" , $clinicId)->get();
-    return response()->json([$reservation], 200);
+    return response()->json($reservation, 200);
 
 }
+
+public function getClinicPatients($clinicId)
+{
+    $reservations = Reservation::where("clinic_id", $clinicId)->get();
+    $patientIds = $reservations->pluck('patient_id');
+    $patients = Patient::whereIn('id', $patientIds)->get();
+    return response()->json($patients, 200);
+}
+
+public function addCondition(Request $request, $clinicId)
+{
+    // Validate the incoming request data
+    $validatedData = $request->validate([
+        'patient_id' => 'required|exists:patients,id',
+        'patient_name' => 'required|string|max:255',
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+    ]);
+
+    // Create a new condition record
+    $condition = new Condition();
+    $condition->clinic_id = $clinicId;
+    $condition->patient_id = $validatedData['patient_id'];
+    $condition->patient_name = $validatedData['patient_name'];
+    $condition->title = $validatedData['title'];
+    $condition->description = $validatedData['description'];
+
+    // Save the condition to the database
+    if ($condition->save()) {
+        return response()->json(['message' => 'Condition added successfully'], 200);
+    } else {
+        return response()->json(['message' => 'Failed to add condition'], 500);
+    }
+}
+
+
 
 
 

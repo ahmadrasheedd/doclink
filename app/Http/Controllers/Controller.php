@@ -41,7 +41,7 @@ class Controller extends BaseController
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Authentication was successful
             $user = Auth::user();
-            return response()->json(['message' => 'Sign in successful', 'user' => $user], 200);
+            return response()->json(['message' => 'Sign in successful', 'user' => $user, 'clinic' => $user->clinic], 200);
         } else {
             // Authentication failed
             return response()->json(['message' => 'Invalid credentials'], 401);

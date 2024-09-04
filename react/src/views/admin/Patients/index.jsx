@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Table,
   Thead,
+  Button,
   Tbody,
   Tr,
   Th,
@@ -11,28 +12,25 @@ import {
   TableContainer,
   Heading,
 } from '@chakra-ui/react';
+import axios from 'axios';
 
-const patients = [
-  {
-    id: 1,
-    name: 'John Doe',
-    age: 30,
-    gender: 'Male',
-    condition: 'Flu',
-    date: "20/7/2024"
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    age: 25,
-    gender: 'Female',
-    condition: 'Cold',
-    date: "19/7/2024"
-  },
-  // Add more patients here
-];
 
 function PatientTable() {
+  const [patients, setPatients] = useState([]);
+
+  useEffect(()=>{
+
+    const getPatients = async ()=>{
+      const res = axios.get(`http://localhost:8000/patients/${localStorage.getItem('clinicId')}`);
+      if((await res).status === 200){
+        setPatients((await res).data)
+      }
+    }
+
+    getPatients();
+
+
+  }, []);
   return (
     <Box p={5} marginTop="100px">
       
@@ -44,9 +42,10 @@ function PatientTable() {
               <Th>ID</Th>
               <Th>Name</Th>
               <Th>Age</Th>
-              <Th>Gender</Th>
-              <Th>Date</Th>
-              <Th>Condition</Th>
+              <Th>Email</Th>
+              <Th>Address</Th>
+              <Th>Actions</Th>
+
             </Tr>
           </Thead>
           <Tbody>
@@ -55,9 +54,13 @@ function PatientTable() {
                 <Td>{patient.id}</Td>
                 <Td>{patient.name}</Td>
                 <Td>{patient.age}</Td>
-                <Td>{patient.gender}</Td>
-                <Td>{patient.date}</Td>
-                <Td>{patient.condition}</Td>
+                <Td>{patient.email}</Td>
+                <Td>{patient.address}</Td>
+                <Td><Button
+                onClick={()=>{
+                  
+                }}
+                className='' backgroundColor={'blue.500'}>contact</Button></Td>
               </Tr>
             ))}
           </Tbody>
