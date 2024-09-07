@@ -99,15 +99,7 @@ function ReservationsTable() {
                                     >
                                         Diagnose Condition
                                     </Button>
-                                    <Button
-                                        marginLeft={"4px"}
-                                        onClick={() => {
-                                            // Implement contact functionality here
-                                        }}
-                                        backgroundColor={'green.500'}
-                                    >
-                                        Patient History
-                                    </Button>
+                                    
                                 </Td>
                             </Tr>
                         ))}

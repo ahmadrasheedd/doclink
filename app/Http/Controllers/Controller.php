@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Patient;
+use App\Models\Reservation;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -87,6 +88,58 @@ class Controller extends BaseController
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
     }
+
+
+    public function getUserClinicStats($userId)
+    {
+        // Fetch the clinics associated with the user
+        $user = User::with('clinic')->find($userId);
+    
+        if (!$user || !$user->clinic) {
+            return response()->json(['message' => 'User or clinic not found'], 404);
+        }
+    
+        // Fetch the clinic IDs
+        $clinicIds = $user->clinic->pluck('id');
+    
+        // Get the number of unique patients from the reservations table
+        $uniquePatientsCount = Reservation::whereIn('clinic_id', $clinicIds)
+                                          ->distinct('patient_id')
+                                          ->count('patient_id');
+    
+        // Get the total number of reservations for the user's clinics
+        $totalReservationsCount = Reservation::whereIn('clinic_id', $clinicIds)
+                                             ->count();
+    
+        return response()->json([
+            'unique_patients' => $uniquePatientsCount,
+            'total_reservations' => $totalReservationsCount,
+            'user_name' => $user->name,
+            'clinic_category' => $user->clinic->category,
+            'user_email' => $user->email,
+            'user_phone' => $user->phone
+        ], 200);
+    }
+    public function updateUser(Request $request, $userId)
+{
+    $user = User::find($userId);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    $user->name = $request->input('name');
+    $user->phone = $request->input('phone');
+    $user->email = $request->input('email');
+
+    if ($request->input('password')) {
+        $user->password = bcrypt($request->input('password'));
+    }
+
+    $user->save();
+
+    return response()->json(['message' => 'User details updated successfully!'], 200);
+}
     
 
 

@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Patient;
 use App\Models\Condition;
 use App\Models\Reservation;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class ClinicController extends Controller
@@ -100,12 +103,14 @@ public function addCondition(Request $request, $clinicId)
         'patient_name' => 'required|string|max:255',
         'title' => 'required|string|max:255',
         'description' => 'required|string',
+        'reservation_id' => 'required|exists:reservations,id',
     ]);
 
     // Create a new condition record
     $condition = new Condition();
     $condition->clinic_id = $clinicId;
     $condition->patient_id = $validatedData['patient_id'];
+    $condition->reservation_id = $validatedData['reservation_id'];
     $condition->patient_name = $validatedData['patient_name'];
     $condition->title = $validatedData['title'];
     $condition->description = $validatedData['description'];
@@ -117,6 +122,67 @@ public function addCondition(Request $request, $clinicId)
         return response()->json(['message' => 'Failed to add condition'], 500);
     }
 }
+
+
+public function getPatientsWithConditions($clinicId)
+{
+    // Fetch patients with their reservations and conditions
+    $patients = Reservation::with(['patient', 'condition'])
+                ->where('clinic_id', $clinicId)
+                ->get()
+                ->map(function($reservation) {
+                    return [
+                        'patient_id' => $reservation->patient->id,
+                        'patient_name' => $reservation->patient->name,
+                        'reservation_id' => $reservation->id,
+                        'date' => $reservation->date,  // Adding the date
+                        'time' => $reservation->time,  // Adding the time
+                        'conditions' => $reservation->condition->map(function($condition) {
+                            return [
+                                'reservation_id' => $condition->reservation_id,
+                                'title' => $condition->title,
+                                'description' => $condition->description
+                            ];
+                        })
+                    ];
+                });
+
+    return response()->json($patients, 200);
+}
+
+
+public function getReservationsByWeek(Request $request, $clinicId)
+{
+    // Log clinicId and date range for debugging
+    Log::info('Fetching reservations', ['clinicId' => $clinicId, 'startOfMonth' => Carbon::now()->startOfMonth(), 'endOfMonth' => Carbon::now()->endOfMonth()]);
+
+    // Get the start and end of the current month
+    $startOfMonth = Carbon::now()->startOfMonth();
+    $endOfMonth = Carbon::now()->endOfMonth();
+
+    // Fetch reservations for the specific clinic and current month
+    $reservations = DB::table('reservations')
+        ->select(DB::raw('WEEK(created_at) as week'), DB::raw('COUNT(*) as count'))
+        ->where('clinic_id', $clinicId)
+        ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+        ->groupBy(DB::raw('WEEK(created_at)'))
+        ->orderBy(DB::raw('WEEK(created_at)'))
+        ->get();
+
+    // Log the fetched reservations for debugging
+    Log::info('Fetched reservations', ['reservations' => $reservations]);
+
+    // Format data for the chart
+    $data = $reservations->map(function ($reservation) {
+        return [
+            'week' => $reservation->week,
+            'count' => $reservation->count,
+        ];
+    });
+
+    return response()->json($data, 200);
+}
+
 
 
 

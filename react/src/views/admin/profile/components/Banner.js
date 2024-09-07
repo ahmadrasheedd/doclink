@@ -31,10 +31,10 @@ export default function Banner(props) {
         borderColor={borderColor}
       />
       <Text color={textColorPrimary} fontWeight='bold' fontSize='xl' mt='10px'>
-        {name}
+        Doctor name: {name}
       </Text>
       <Text color={textColorSecondary} fontSize='sm'>
-        {job}
+        Clinic Category: {job}
       </Text>
       <Flex w='max-content' mx='auto' mt='26px'>
         <Flex mx='auto' me='60px' align='center' direction='column'>
@@ -42,23 +42,16 @@ export default function Banner(props) {
             {posts}
           </Text>
           <Text color={textColorSecondary} fontSize='sm' fontWeight='400'>
-            Posts
+            patients
           </Text>
         </Flex>
-        <Flex mx='auto' me='60px' align='center' direction='column'>
-          <Text color={textColorPrimary} fontSize='2xl' fontWeight='700'>
-            {followers}
-          </Text>
-          <Text color={textColorSecondary} fontSize='sm' fontWeight='400'>
-            Followers
-          </Text>
-        </Flex>
+       
         <Flex mx='auto' align='center' direction='column'>
           <Text color={textColorPrimary} fontSize='2xl' fontWeight='700'>
             {following}
           </Text>
           <Text color={textColorSecondary} fontSize='sm' fontWeight='400'>
-            Following
+            Reservations
           </Text>
         </Flex>
       </Flex>

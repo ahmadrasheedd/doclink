@@ -1,4 +1,7 @@
-// Chakra imports
+import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import axios from 'axios';
 import {
   Box,
   Button,
@@ -7,15 +10,17 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import Card from "components/card/Card.js";
-// Custom components
-import BarChart from "components/charts/BarChart";
-import React from "react";
-import {
-  barChartDataConsumption,
-  barChartOptionsConsumption,
-} from "variables/charts";
-import { MdBarChart } from "react-icons/md";
+import { MdBarChart } from 'react-icons/md';
+
+// Register Chart.js components
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
+);
 
 export default function WeeklyRevenue(props) {
   const { ...rest } = props;
@@ -32,8 +37,81 @@ export default function WeeklyRevenue(props) {
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.100" }
   );
+
+  // State for weekly data
+  const [weeklyData, setWeeklyData] = useState([]);
+
+  useEffect(() => {
+    const fetchWeeklyRevenue = async () => {
+      const clinicId = localStorage.getItem('clinicId'); // Retrieve the clinic ID from local storage
+      try {
+        const res = await axios.get(`http://localhost:8000/reservations-by-week/${clinicId}`);
+        if (res.status === 200) {
+          // Set weekly data from response
+          setWeeklyData(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching weekly revenue:", error);
+      }
+    };
+
+    fetchWeeklyRevenue();
+  }, []);
+
+  // Prepare data for the chart
+  const chartData = {
+    labels: weeklyData.map(data => `Week ${data.week}`),
+    datasets: [
+      {
+        label: 'Number of Reservations',
+        data: weeklyData.map(data => data.count),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(tooltipItem) {
+            return `Week ${tooltipItem.label}: ${tooltipItem.raw} Reservations`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Weeks',
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Number of Reservations',
+        },
+        ticks: {
+          // Ensure whole numbers on y-axis
+          callback: function(value) {
+            return Number.isInteger(value) ? value : '';
+          },
+        },
+      },
+    },
+  };
+
   return (
-    <Card align='center' direction='column' w='100%' {...rest}>
+    <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
       <Flex align='center' w='100%' px='15px' py='10px'>
         <Text
           me='auto'
@@ -41,7 +119,7 @@ export default function WeeklyRevenue(props) {
           fontSize='xl'
           fontWeight='700'
           lineHeight='100%'>
-          Weekly Revenue
+          Weekly Reservations
         </Text>
         <Button
           align='center'
@@ -60,11 +138,11 @@ export default function WeeklyRevenue(props) {
       </Flex>
 
       <Box h='240px' mt='auto'>
-        <BarChart
-          chartData={barChartDataConsumption}
-          chartOptions={barChartOptionsConsumption}
+        <Bar
+          data={chartData}
+          options={chartOptions}
         />
       </Box>
-    </Card>
+    </Box>
   );
 }

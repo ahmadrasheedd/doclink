@@ -31,3 +31,7 @@ Route::post('/book-visit', [ClinicController::class, 'bookVisit']);
 Route::get('/reservations/{clinicId}', [ClinicController::class, 'getClinicReservations']);
 Route::get('/patients/{clinicId}', [ClinicController::class, 'getClinicPatients']);
 Route::post('add-condition/{clinicId}', [ClinicController::class, 'addCondition']);
+Route::get('/patients-with-conditions/{clinicId}', [ClinicController::class, 'getPatientsWithConditions']);
+Route::get('/user-info/{userId}', [Controller::class, 'getUserClinicStats']);
+Route::put('/update-user/{userId}', [Controller::class, 'updateUser']);
+Route::get('/reservations-by-week/{clinicId}', [ClinicController::class, 'getReservationsByWeek']);

@@ -23,6 +23,7 @@ import SignUpCentered from "views/signup";
 import MyClinic from "views/admin/myClinic";
 import PatientTable from "views/admin/Patients";
 import ReservationsTable from "views/admin/reservations";
+import PatientHistoryTable from "views/admin/patientHistory";
 import { FaUser } from "react-icons/fa";
 
 
@@ -34,28 +35,8 @@ const routes = [
     icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
     component: MainDashboard,
   },
-  {
-    name: "NFT Marketplace",
-    layout: "/admin",
-    path: "/nft-marketplace",
-    icon: (
-      <Icon
-        as={MdOutlineShoppingCart}
-        width='20px'
-        height='20px'
-        color='inherit'
-      />
-    ),
-    component: NFTMarketplace,
-    secondary: true,
-  },
-  {
-    name: "Data Tables",
-    layout: "/admin",
-    icon: <Icon as={MdBarChart} width='20px' height='20px' color='inherit' />,
-    path: "/data-tables",
-    component: DataTables,
-  },
+  
+ 
   {
     name: "Profile",
     layout: "/admin",
@@ -102,12 +83,14 @@ const routes = [
 
   },
   {
-    name: "RTL Admin",
-    layout: "/rtl",
-    path: "/rtl-default",
-    icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
-    component: RTL,
+    name: "Patient History",
+    layout: "/admin",
+    path: "/history",
+    icon: <Icon as={HamburgerIcon} width="20px" height="20px" color="inherit" />,
+    component: PatientHistoryTable,
+
   },
+  
 ];
 
 export default routes;

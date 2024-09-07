@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable; // Use Authenticatable instead of Model
 use Illuminate\Notifications\Notifiable;
+use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patient extends Authenticatable // Extend Authenticatable
@@ -24,5 +25,10 @@ class Patient extends Authenticatable // Extend Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }

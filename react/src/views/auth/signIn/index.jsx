@@ -82,7 +82,8 @@ function SignIn() {
       });
       if (response.status === 200) {
         localStorage.setItem("userId", response.data.user.id)
-        localStorage.setItem("clinicId", response.data.clinic.id)
+        localStorage.setItem("clinicId", response.data?.clinic?.id ?? null);
+
         history.push('/');
       }
       console.log('Sign in successful', response.data);
